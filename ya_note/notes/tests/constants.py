@@ -15,6 +15,7 @@ NOTE_SLUG = 'note-slug'
 NOTES_LIST_URL = reverse('notes:list')
 NOTES_ADD_URL = reverse('notes:add')
 NOTES_EDIT_URL = reverse('notes:edit', args=[NOTE_SLUG])
+NOTES_DELETE_URL = reverse('notes:delete', args=[NOTE_SLUG])
 
 NOTES_SUCCESS = reverse('notes:success')
 
