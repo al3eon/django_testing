@@ -11,7 +11,7 @@ from notes.models import Note
 from .constants import (
     BaseTestCase,
     NOTES_ADD_URL,
-    NOTES_SUCCESS,
+    NOTES_SUCCESS_URL,
     USER_LOGIN,
     NOTES_EDIT_URL,
     NOTES_DELETE_URL
@@ -24,7 +24,7 @@ class TestCreateNote(BaseTestCase):
     def test_user_can_create_note(self):
         Note.objects.all().delete()
         response = self.author_client.post(NOTES_ADD_URL, self.form_data)
-        self.assertRedirects(response, NOTES_SUCCESS)
+        self.assertRedirects(response, NOTES_SUCCESS_URL)
         self.assertEqual(Note.objects.count(), 1)
         new_note = Note.objects.get()
         self.assertEqual(new_note.title, self.form_data['title'])
