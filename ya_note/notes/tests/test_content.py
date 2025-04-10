@@ -3,45 +3,38 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 
 from notes.forms import NoteForm
-from notes.models import Note
+
+from .constants import (
+    BaseTestCase,
+    NOTES_ADD_URL,
+    NOTES_EDIT_URL,
+    NOTES_LIST_URL
+)
 
 User = get_user_model()
 
 
-class TestLogicNote(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        cls.author = User.objects.create_user(username='Автор')
-        cls.reader = User.objects.create_user(username='Читатель')
-        cls.note = Note.objects.create(
-            title='Заголовок',
-            text='Текст заметки',
-            slug='note-slug',
-            author=cls.author,
-        )
-
+class TestLogicNote(BaseTestCase):
     def test_notes_list_for_different_users(self):
         users_statuses = (
-            (self.author, True),
-            (self.reader, False),
+            (self.author_client, True),
+            (self.reader_client, False),
         )
-        url = reverse('notes:list')
         for user, expected_status in users_statuses:
             with self.subTest(user=user, expected_status=expected_status):
-                self.client.force_login(user)
-                response = self.client.get(url)
+                response = user.get(NOTES_LIST_URL)
                 object_list = response.context['object_list']
                 self.assertIs((self.note in object_list), expected_status)
 
     def test_pages_contains_form(self):
         urls = (
-            ('notes:add', None),
-            ('notes:edit', [self.note.slug])
+            NOTES_ADD_URL,
+            NOTES_EDIT_URL
         )
-        self.client.force_login(self.author)
-        for name, args in urls:
-            with self.subTest(name=name, args=args):
-                url = reverse(name, args=args)
-                response = self.client.get(url)
-                self.assertIn('form', response.context)
-                self.assertIsInstance(response.context['form'], NoteForm)
+        for name in urls:
+            with self.subTest(name=name):
+                response = self.author_client.get(name)
+                self.assertIsInstance(
+                    response.context.get('form'),
+                    NoteForm
+                )
