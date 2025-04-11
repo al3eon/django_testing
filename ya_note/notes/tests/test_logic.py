@@ -63,7 +63,6 @@ class TestCreateNote(BaseTestCase):
         self.assertEqual(Note.objects.count(), count_notes)
 
     def test_author_can_edit_note(self):
-        old_note = Note.objects.get(pk=self.note.pk)
         response = self.author_client.post(NOTES_EDIT_URL, self.form_data)
         self.assertRedirects(response, reverse('notes:success'))
 
@@ -71,7 +70,7 @@ class TestCreateNote(BaseTestCase):
         self.assertEqual(updated_note.title, self.form_data['title'])
         self.assertEqual(updated_note.text, self.form_data['text'])
         self.assertEqual(updated_note.slug, self.form_data['slug'])
-        self.assertEqual(updated_note.author, old_note.author)
+        self.assertEqual(updated_note.author, self.note.author)
 
     def test_other_user_cant_edit_note(self):
         response = self.reader_client.post(NOTES_EDIT_URL, self.form_data)

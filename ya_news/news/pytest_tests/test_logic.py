@@ -62,29 +62,19 @@ def test_author_cant_delete_comment(
 def test_author_can_edit_comment(
         author_client, edit_url, form_edit_data, comment_url, comment
 ):
-    original_comment = {
-        'id': comment.id,
-        'news': comment.news,
-        'author': comment.author,
-        'created': comment.created
-    }
     responses = author_client.post(edit_url, data=form_edit_data)
     assertRedirects(responses, comment_url)
-    update_comment = Comment.objects.get(id=original_comment['id'])
+    update_comment = Comment.objects.get(id=comment.id)
     assert update_comment.text == form_edit_data['text']
-    assert update_comment.news == original_comment['news']
-    assert update_comment.author == original_comment['author']
-    assert update_comment.created == original_comment['created']
+    assert update_comment.news == comment.news
+    assert update_comment.author == comment.author
+    assert update_comment.created == comment.created
 
 
 def test_author_cant_edit_comment(
         not_author_client, edit_url, form_edit_data, comment_url, comment
 ):
-    original_comment = {
-        'id': comment.id,
-        'text': comment.text,
-    }
     responses = not_author_client.post(edit_url, data=form_edit_data)
     assert responses.status_code == HTTPStatus.NOT_FOUND
-    refetched_comment = Comment.objects.get(id=original_comment['id'])
-    assert refetched_comment.text == original_comment['text']
+    refetched_comment = Comment.objects.get(id=comment.id)
+    assert refetched_comment.text == comment.text
