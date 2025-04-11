@@ -1,7 +1,6 @@
 from http import HTTPStatus
 
 from django.contrib.auth import get_user_model
-from django.test import TestCase
 from django.urls import reverse
 from pytils.translit import slugify
 
@@ -11,10 +10,10 @@ from notes.models import Note
 from .constants import (
     BaseTestCase,
     NOTES_ADD_URL,
+    NOTES_DELETE_URL,
+    NOTES_EDIT_URL,
     NOTES_SUCCESS_URL,
     USER_LOGIN,
-    NOTES_EDIT_URL,
-    NOTES_DELETE_URL
 )
 
 User = get_user_model()

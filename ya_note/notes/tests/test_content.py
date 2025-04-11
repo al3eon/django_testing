@@ -1,5 +1,3 @@
-from django.test import TestCase
-from django.urls import reverse
 from django.contrib.auth import get_user_model
 
 from notes.forms import NoteForm
@@ -8,7 +6,7 @@ from .constants import (
     BaseTestCase,
     NOTES_ADD_URL,
     NOTES_EDIT_URL,
-    NOTES_LIST_URL
+    NOTES_LIST_URL,
 )
 
 User = get_user_model()

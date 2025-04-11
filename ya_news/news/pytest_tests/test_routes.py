@@ -1,61 +1,47 @@
 from http import HTTPStatus
+
 import pytest
-
 from django.urls import reverse
-
 from pytest_django.asserts import assertRedirects
 
+HOME_URL = pytest.lazy_fixture('home_url')
+NEWS_DETAIL_URL = pytest.lazy_fixture('news_detail_url')
+LOGIN_URL = pytest.lazy_fixture('login_url')
+LOGOUT_URL = pytest.lazy_fixture('logout_url')
+SIGNUP_URL = pytest.lazy_fixture('signup_url')
+NEWS_EDIT_URL = pytest.lazy_fixture('edit_url')
+NEWS_DELETE_URL = pytest.lazy_fixture('delete_url')
+
 
 @pytest.mark.parametrize(
-    'name, args',
+    'url, client_fixture, expected_status',
     [
-        ('news:home', None),
-        ('news:detail', pytest.lazy_fixture('slug_for_news')),
-        ('users:login', None),
-        ('users:logout', None),
-        ('users:signup', None),
+        (HOME_URL, 'client', HTTPStatus.OK),
+        (NEWS_DETAIL_URL, 'client', HTTPStatus.OK),
+        (LOGIN_URL, 'client', HTTPStatus.OK),
+        (LOGOUT_URL, 'client', HTTPStatus.OK),
+        (SIGNUP_URL, 'client', HTTPStatus.OK),
+        (NEWS_EDIT_URL, 'author_client', HTTPStatus.OK),
+        (NEWS_DELETE_URL, 'author_client', HTTPStatus.OK),
+        (NEWS_EDIT_URL, 'not_author_client', HTTPStatus.NOT_FOUND),
+        (NEWS_DELETE_URL, 'not_author_client', HTTPStatus.NOT_FOUND),
     ]
 )
-@pytest.mark.django_db
-def test_pages_availability(client, name, args):
-    # Адрес страницы получаем через reverse():
-    url = reverse(name, args=args)
+def test_pages_availability(request, url, client_fixture, expected_status):
+    client = request.getfixturevalue(client_fixture)
     response = client.get(url)
-    assert response.status_code == HTTPStatus.OK
-
-
-@pytest.mark.parametrize(
-    'parametrized_client, expected_status',
-    [
-        (pytest.lazy_fixture('not_author_client'), HTTPStatus.NOT_FOUND),
-        (pytest.lazy_fixture('author_client'), HTTPStatus.OK)
-    ],
-)
-@pytest.mark.parametrize(
-    'name',
-    (
-        'news:edit',
-        'news:delete'
-    ),
-)
-def test_availability_for_comment_edit_and_delete(
-        parametrized_client, expected_status, comment, name
-):
-    url = reverse(name, args=[comment.id])
-    response = parametrized_client.get(url)
     assert response.status_code == expected_status
 
 
 @pytest.mark.parametrize(
     'name',
     (
-        'news:edit',
-        'news:delete',
+        NEWS_EDIT_URL,
+        NEWS_DELETE_URL,
     ),
 )
 def test_redirects(client, name, comment):
     loging_url = reverse('users:login')
-    url = reverse(name, args=[comment.id])
-    expected_url = f'{loging_url}?next={url}'
-    response = client.get(url)
+    expected_url = f'{loging_url}?next={name}'
+    response = client.get(name)
     assertRedirects(response, expected_url)

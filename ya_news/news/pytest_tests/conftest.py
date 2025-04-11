@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 
 import pytest
-
 from django.conf import settings
 from django.test.client import Client
 from django.urls import reverse
@@ -9,16 +8,15 @@ from django.utils import timezone
 
 from news.models import Comment, News
 
-from .test_constants import CommentText
-
 
 TEST_COMMENTS_COUNT = 10
+COMMENT_TEXT = 'Текст комментария'
+UPDATE_COMMENT_TEXT = 'Текст измененного комментария'
 
 
-@pytest.fixture
-def slug_for_news():
-    news = News.objects.create(title='Тест', text='Тестовый текст')
-    return (news.id,)
+@pytest.fixture(autouse=True)
+def enable_db_access_for_all_tests(db):
+    pass
 
 
 @pytest.fixture
@@ -55,12 +53,11 @@ def news():
 
 @pytest.fixture
 def comment(author, news):
-    comment = Comment.objects.create(
-        text=CommentText.COMMENT_TEXT,
+    return Comment.objects.create(
+        text=COMMENT_TEXT,
         author_id=author.id,
         news=news
     )
-    return comment
 
 
 @pytest.fixture
@@ -85,12 +82,12 @@ def detail_url(news):
 
 @pytest.fixture
 def form_create_data():
-    return {'text': CommentText.COMMENT_TEXT}
+    return {'text': COMMENT_TEXT}
 
 
 @pytest.fixture
 def form_edit_data():
-    return {'text': CommentText.UPDATE_COMMENT_TEXT}
+    return {'text': UPDATE_COMMENT_TEXT}
 
 
 @pytest.fixture
@@ -117,3 +114,28 @@ def delete_url(comment):
 @pytest.fixture
 def edit_url(comment):
     return reverse('news:edit', args=(comment.id,))
+
+
+@pytest.fixture
+def home_url():
+    return reverse('news:home')
+
+
+@pytest.fixture
+def news_detail_url(news):
+    return reverse('news:detail', args=[news.id])
+
+
+@pytest.fixture
+def login_url():
+    return reverse('users:login')
+
+
+@pytest.fixture
+def logout_url():
+    return reverse('users:logout')
+
+
+@pytest.fixture
+def signup_url():
+    return reverse('users:signup')

@@ -4,16 +4,16 @@ from django.contrib.auth import get_user_model
 
 from .constants import (
     BaseTestCase,
-    NOTES_ADD_URL,
-    NOTES_SUCCESS_URL,
-    USER_LOGIN,
-    NOTES_EDIT_URL,
     HOME_URL,
-    USER_LOGOUT,
-    USER_SIGNUP,
+    NOTES_ADD_URL,
     NOTES_DELETE_URL,
     NOTES_DETAIL_URL,
-    NOTES_LIST_URL
+    NOTES_EDIT_URL,
+    NOTES_LIST_URL,
+    NOTES_SUCCESS_URL,
+    USER_LOGIN,
+    USER_LOGOUT,
+    USER_SIGNUP,
 )
 
 User = get_user_model()
